@@ -22,12 +22,15 @@ func main() {
 	if err != nil {
 		maxUploadBytes = 2 * 1024 * 1024
 	}
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 
-	fmt.Println(uploadDir)
 	fs := http.FileServer(http.Dir(uploadDir))
 	http.Handle("/", fs)
 	http.HandleFunc("/upload", uploadFileHandler(uploadDir, int64(maxUploadBytes)))
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }
 
 func uploadFileHandler(uploadDir string, maxBytes int64) http.HandlerFunc {
